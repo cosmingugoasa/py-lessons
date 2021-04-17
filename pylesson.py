@@ -24,6 +24,10 @@ if(os.path.isdir('chunks')):
 else:
     os.mkdir("chunks")
 
+#make folder for each lesson's chunks
+if not (os.path.exists(f"chunks/{files_outputted}")):
+    os.mkdir(f"chunks/{files_outputted}")
+
 #extract wav audio file from mkv video file
 extractionTask = subprocess.run(f"{FFMPEG_FILE_PATH} -i {AUDIO_FILE_PATH} -ab 160k -ac 2 -ar 44100 -vn audio.wav", shell=True)
 
@@ -35,7 +39,7 @@ else:
     print("** Splitting audio chunks **")
 
 #splitting main audio file into chunks for faster processing    
-splittingTask = subprocess.run(f"{FFMPEG_FILE_PATH} -i audio.wav -f segment -segment_time 60 -c copy chunks/%03d.wav", shell=True)
+splittingTask = subprocess.run(f"{FFMPEG_FILE_PATH} -i audio.wav -f segment -segment_time 180 -c copy chunks/{files_outputted}/%03d.wav", shell=True)
 
 if(splittingTask.returncode != 0):
     print("** Error while splitting **")
@@ -45,7 +49,7 @@ else:
     
 #order file for stt
 audio_chunks = []
-for audio_chunk_filename in os.listdir('chunks/'):
+for audio_chunk_filename in os.listdir(f"chunks/{files_outputted}"):
     if(audio_chunk_filename.endswith(".wav")):
         audio_chunks.append(audio_chunk_filename)
 audio_chunks.sort()
@@ -56,22 +60,22 @@ instance = sr.Recognizer()
 stt_chunks = [] #stt of each chunk
 count = 1
 for chunk in audio_chunks:
-    audioFile = sr.AudioFile((f"chunks/{chunk}"))
+    audioFile = sr.AudioFile((f"chunks/{files_outputted}/{chunk}"))
     
     with audioFile as source:
         instance.pause_threshold = 30
-        print(f"** In ascolto : {count}/{len(audio_chunks)}**")
         audio = instance.listen(source)
-        print("** Elaborazione **")                    
+        print(f"** Elaborazione : {count}/{len(audio_chunks)}**")                
         
         try:
             stt_chunk = instance.recognize_google(audio, language="it-IT")
             stt_chunk = stt_chunk.lower()
             stt_chunks.append(stt_chunk)
         except Exception as e:
-            print(f"**Could not understand audio. {e}**")
+            print(f"**[CHUNK : {count}] Could not understand audio. {e}**")
 
     count += 1
+    break
 
 #write chunks to file
 print("** Writing to file **")
