@@ -5,11 +5,19 @@ import subprocess
 import os
 import datetime
 import shutil
+import stt
+import threading
+import time
 
 FFMPEG_FILE_PATH = os.path.abspath("ffmpeg.exe")
 AUDIO_FILE_PATH = os.path.abspath(sys.argv[-1])
 
 files_outputted = 1
+max_threads_count = 4
+
+#################################################
+#   MAIN
+#################################################
 
 #check if audio.wav already exists and delete it
 if(os.path.isfile("audio.wav")):
@@ -39,7 +47,7 @@ else:
     print("** Splitting audio chunks **")
 
 #splitting main audio file into chunks for faster processing    
-splittingTask = subprocess.run(f"{FFMPEG_FILE_PATH} -i audio.wav -f segment -segment_time 180 -c copy chunks/{files_outputted}/%03d.wav", shell=True)
+splittingTask = subprocess.run(f"{FFMPEG_FILE_PATH} -i audio.wav -f segment -segment_time 90 -c copy chunks/{files_outputted}/%03d.wav", shell=True)
 
 if(splittingTask.returncode != 0):
     print("** Error while splitting **")
@@ -60,22 +68,22 @@ instance = sr.Recognizer()
 stt_chunks = [] #stt of each chunk
 count = 1
 for chunk in audio_chunks:
-    audioFile = sr.AudioFile((f"chunks/{files_outputted}/{chunk}"))
+    while(threading.active_count() > max_threads_count + 1):
+        #print(f"**Waiting for a free thread**")
+        time.sleep(0.1)
     
-    with audioFile as source:
-        instance.pause_threshold = 30
-        audio = instance.listen(source)
-        print(f"** Elaborazione : {count}/{len(audio_chunks)}**")                
-        
-        try:
-            stt_chunk = instance.recognize_google(audio, language="it-IT")
-            stt_chunk = stt_chunk.lower()
-            stt_chunks.append(stt_chunk)
-        except Exception as e:
-            print(f"**[CHUNK : {count}] Could not understand audio. {e}**")
+    audioFile = sr.AudioFile((f"chunks/{files_outputted}/{chunk}"))
+
+    #stt.recog(audioFile, instance, count, audio_chunks, stt_chunks)
+    t = threading.Thread(target=stt.recog, args=(audioFile, instance, count, audio_chunks, stt_chunks,))
+    t.start()
 
     count += 1
-    break
+    #if(count == 11):
+    #    break
+
+while(threading.active_count() > 1):
+    time.sleep(0.1)
 
 #write chunks to file
 print("** Writing to file **")
