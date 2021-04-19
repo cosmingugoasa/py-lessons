@@ -4,7 +4,7 @@
 Currently working on integration with [destreamer](https://github.com/snobu/destreamer) so you can use this providing the link to the lesson or a file with the links of multiple lessons, instead of having to download the lessons separately.
 
 ## Things to know
-Currently working with **.mkv** video files only
+Currently working with **.mkv** video files only.
 
 ## Prereqs
 - [**Python 3.x**](https://www.python.org/): you will need python installed on your system. (Developed with python 3.9.4).
