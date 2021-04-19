@@ -1,5 +1,11 @@
 # PyLessons v1.1
 
+## W.I.P.
+Currently working on integration with [destreamer](https://github.com/snobu/destreamer) so you can use this providing the link to the lesson or a file with the links of multiple lessons, instead of having to download the lessons separately.
+
+## Things to know
+Currently working with **.mkv** video files only
+
 ## Prereqs
 - [**Python 3.x**](https://www.python.org/): you will need python installed on your system. (Developed with python 3.9.4).
 - [**ffmpeg**](https://www.ffmpeg.org/): a recent version (year 2019 or above), in `$PATH` or the .exe in the same directory as this README file (project root).
