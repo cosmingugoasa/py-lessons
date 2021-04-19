@@ -4,6 +4,17 @@
 - [**Python 3.x**](https://www.python.org/): you will need python installed on your system. (Developed with python 3.9.4).
 - [**ffmpeg**](https://www.ffmpeg.org/): a recent version (year 2019 or above), in `$PATH` or the .exe in the same directory as this README file (project root).
 
+## Setup
+You will need to install all the python dependencies of the project, so i recommend creating a venv for this.
+```sh
+$ python -m venv my-env
+$ ./my-env/Scripts/activate
+```
+Install dependencies from the *requirements.txt*. You **MUST** be in the same folder as the .txt
+```sh
+$ pip install -r requirements.txt
+```
+
 ## How to use
 
 Open cmd (or any terminal) and go to the project folder
