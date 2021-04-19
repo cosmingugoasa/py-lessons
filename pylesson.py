@@ -8,6 +8,7 @@ import shutil
 import stt
 import threading
 import time
+from tqdm import tqdm
 
 FFMPEG_FILE_PATH = os.path.abspath("ffmpeg.exe")
 AUDIO_FILE_PATH = os.path.abspath(sys.argv[-1])
@@ -65,8 +66,11 @@ print(f"**{len(audio_chunks)} audio chunks created**")
 
 #perform stt on each file
 instance = sr.Recognizer()
-stt_chunks = [] #stt of each chunk
-count = 1
+stt_chunks = [None] * (len(audio_chunks)-1) #stt of each chunk
+count = 0
+#pbar = tqdm(total=10 +1)
+pbar = tqdm(total=len(audio_chunks))
+
 for chunk in audio_chunks:
     while(threading.active_count() > max_threads_count + 1):
         #print(f"**Waiting for a free thread**")
@@ -78,12 +82,18 @@ for chunk in audio_chunks:
     t = threading.Thread(target=stt.recog, args=(audioFile, instance, count, audio_chunks, stt_chunks,))
     t.start()
 
+    pbar.update(1)
     count += 1
-    #if(count == 11):
+    
+    #if(count == 10):
     #    break
 
-while(threading.active_count() > 1):
+while(threading.active_count() > 2):
+    #print(f"Active threads : {threading.active_count()}")
     time.sleep(0.1)
+
+pbar.update(1)
+pbar.close()
 
 #write chunks to file
 print("** Writing to file **")
@@ -91,7 +101,8 @@ dateString = datetime.datetime.now()
 dateString = str(dateString)[:10]
 output = open(f"lezione-{dateString}-{files_outputted}.txt", "a")
 for chunk in stt_chunks:
-    output.write(chunk + '\n')
+    if(chunk != None):
+        output.write(chunk + '\n')
 
 output.close()
 

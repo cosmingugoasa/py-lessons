@@ -13,7 +13,8 @@ def recog(audioFile, recogInstance, count, audio_chunks, stt_chunks):
         try:
             stt_chunk = recogInstance.recognize_google(audio, language="it-IT")
             stt_chunk = stt_chunk.lower()
-            stt_chunks.append(stt_chunk)
-            print(f"** Elaborazione : {count}/{len(audio_chunks)}**")
+            #stt_chunks.append(stt_chunk)
+            stt_chunks[count] = stt_chunk
+            #print(f"** Elaborazione : {count}**")
         except Exception as e:
             print(f"**[CHUNK : {count}] Could not understand audio. {e}**")
