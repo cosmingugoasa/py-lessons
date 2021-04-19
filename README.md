@@ -22,7 +22,7 @@ Open cmd (or any terminal) and go to the project folder
 ```sh
 $ cd D:\Documents\Dev\py-lessons
 ```
-Launch the "py-lesson.py" and give as first parameter the path to the folder with the video lessons
+Launch the "py-lesson.py" and give as first parameter **the path** to the folder with the video lessons
 
 ```sh
 $ .\pylesson.py D:\Documents\Destream\destreamer\videos
