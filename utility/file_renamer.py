@@ -1,8 +1,6 @@
 import os
 import sys
 
-#VIDEO_FOLDER_PATH = os.path.abspath(sys.argv[-1])
-
 def normalize_files_name(video_folder_path):
     for raw_video in os.listdir(f"{video_folder_path}"):
         if(raw_video.endswith(".mkv")):

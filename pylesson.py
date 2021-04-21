@@ -10,15 +10,44 @@ import threading
 import time
 from tqdm import tqdm
 import utility.file_renamer as util
+import utility.gui as gui
+from colorama import Fore 
 
-FFMPEG_FILE_PATH = os.path.abspath("ffmpeg.exe")
-VIDEO_FOLDER_PATH = os.path.abspath(sys.argv[-1])
+FFMPEG_FILE_PATH = "ffmpeg.exe"
+VIDEO_FOLDER_PATH = "D:/Documents/Destream/destreamer/videos"
+DESTREAM_PATH = "D:/Documents/Destream/destreamer"
+STUDENT_MAIL = "cosmin.gugoasa@studenti.unipr.it"
 
-files_outputted = 1
+files_outputted = 0
 max_threads_count = 4
+main_working_dir = os.getcwd()
 
-#################################################
-#   MAIN
+
+gui.printMenu()
+
+############ DESTREAMER INTEGRATION #############
+menuChoice = input()
+
+os.chdir(DESTREAM_PATH)
+if(menuChoice == "1"):
+    print("Inserisci il link alla lezione: ")
+    link = input()
+    mkvExtractionTask = subprocess.run(f"destreamer.cmd -u {STUDENT_MAIL} -i {link}", shell=True)
+elif(menuChoice == "2"):
+    print("Inserisci il nome/percorso del file txt: ")
+    txtFile = input()
+    mkvExtractionTask = subprocess.run(f"destreamer.cmd -u {STUDENT_MAIL} -f {txtFile}", shell=True)
+else:
+    print(Fore.RED + "- Opzione non valida" + Fore.RESET)
+    sys.exit()   
+
+if(mkvExtractionTask.returncode != 0):
+    print(Fore.RED + "- Failed to download mkv file" + Fore.RESET)
+    sys.exit()
+else:
+    print(Fore.GREEN + "- Videos downloaded" + Fore.RESET)
+
+os.chdir(main_working_dir)
 #################################################
 
 #file name normalization (basically replaces spaces in the name with _)
@@ -33,7 +62,7 @@ raw_video_filename.sort()
 
 #check if chunks/ has files and clean it
 if(os.path.isdir(f"chunks/{files_outputted}")):
-    print("**'chunks/' already exists. Emptying it.**")
+    print(Fore.CYAN + "- 'chunks/' already exists. Emptying it." + Fore.RESET)
     shutil.rmtree("chunks")
     os.mkdir("chunks")
     
@@ -41,7 +70,7 @@ for file in raw_video_filename :
     print(file)
     #check if audio.wav already exists and delete it
     if(os.path.isfile("audio.wav")):
-        print("- updating audio file for stt splitting&extraction")
+        print(Fore.CYAN + "- updating audio file for stt splitting&extraction" + Fore.RESET)
         os.remove("audio.wav")
 
     #make folder for each lesson's chunks
@@ -52,19 +81,19 @@ for file in raw_video_filename :
     extractionTask = subprocess.run(f"{FFMPEG_FILE_PATH} -i {VIDEO_FOLDER_PATH}\{file} -ab 160k -ac 2 -ar 44100 -vn audio.wav", shell=True)
 
     if(extractionTask.returncode != 0):
-        print("**Error extracting audio**")
+        print(Fore.RED + "- Error extracting audio" + Fore.RESET)
         sys.exit()
     else:
-        print("- audio file extracted succesfully. splitting audio chunks")
+        print(Fore.GREEN + "- audio file extracted succesfully. splitting audio chunks" + Fore.RESET)
 
     #splitting main audio file into chunks for faster processing    
-    splittingTask = subprocess.run(f"{FFMPEG_FILE_PATH} -i audio.wav -f segment -segment_time 90 -c copy chunks/{files_outputted}/%03d.wav", shell=True)
+    splittingTask = subprocess.run(f"{FFMPEG_FILE_PATH} -loglevel quiet -nostats -i audio.wav -f segment -segment_time 90 -c copy chunks/{files_outputted}/%03d.wav", shell=True)
 
     if(splittingTask.returncode != 0):
-        print("** Error while splitting **")
+        print(Fore.RED + "- Error while splitting" + Fore.RESET)
         sys.exit()
     else:
-        print("- split succesful")
+        print(Fore.GREEN + "- split succesful" + Fore.RESET)
         
     #order file for stt
     audio_chunks = []
@@ -72,7 +101,7 @@ for file in raw_video_filename :
         if(audio_chunk_filename.endswith(".wav")):
             audio_chunks.append(audio_chunk_filename)
     audio_chunks.sort()
-    print(f"- {len(audio_chunks)} audio chunks created")
+    print(Fore.CYAN + f"- {len(audio_chunks)} audio chunks created" + Fore.RESET)
 
     #perform stt on each file
     instance = sr.Recognizer()
@@ -83,12 +112,10 @@ for file in raw_video_filename :
 
     for chunk in audio_chunks:
         while(threading.active_count() > max_threads_count + 1):
-            #print(f"**Waiting for a free thread**")
             time.sleep(0.1)
         
         audioFile = sr.AudioFile((f"chunks/{files_outputted}/{chunk}"))
 
-        #stt.recog(audioFile, instance, count, audio_chunks, stt_chunks)
         t = threading.Thread(target=stt.recog, args=(audioFile, instance, count, audio_chunks, stt_chunks,))
         t.start()
 
@@ -99,7 +126,6 @@ for file in raw_video_filename :
         #    break
 
     while(threading.active_count() > 2):
-        #print(f"Active threads : {threading.active_count()}")
         time.sleep(0.1)
 
     pbar.update(1)
@@ -116,6 +142,11 @@ for file in raw_video_filename :
 
     output.close()
     files_outputted += 1
-    print("** DONE **")
 
-print(f"**{files_outputted} lezioni create**")
+print(Fore.GREEN + f"- Done " + Fore.RESET)
+
+################# CLEAN UP #####################
+print(Fore.GREEN + f"- Clean up started" + Fore.RESET)
+shutil.rmtree(VIDEO_FOLDER_PATH)
+
+print(Fore.MAGENTA + f"Close window, and go study" + Fore.RESET)
