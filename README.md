@@ -2,7 +2,7 @@
 
 ## W.I.P.
 Currently working on refactoring since we have a nice spaghetti plate here...
-Next up : 
+<br>Next up : 
   - Better UX
    
 ## Things to know
