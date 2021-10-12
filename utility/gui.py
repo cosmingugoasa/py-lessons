@@ -4,7 +4,9 @@ from colorama import Fore
 def printMenu():
     init()
     print(Fore.YELLOW + """\
+
                                Dax - 2021
+
      _____       _                                          __   ___  
     |  __ \     | |                                        /_ | |__ \ 
     | |__) |   _| |     ___  ___ ___  ___  _ __  ___  __   _| |    ) |
