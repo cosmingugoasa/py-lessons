@@ -19,5 +19,6 @@ def printMenu():
     print(Fore.GREEN + """\
         Inserisci il numero corrispondente all'opzione che vuoi usare:""" + Fore.RESET + """
         - [""" + Fore.GREEN + """1"""+ Fore.RESET + """] Link.
-        - [""" + Fore.GREEN + """2""" +Fore.RESET + """] TXT file.
+        - [""" + Fore.GREEN + """2""" +Fore.RESET + """] TXT file con più link.
+        - [""" + Fore.GREEN + """3""" +Fore.RESET + """] Registrazione audio.
     """)
