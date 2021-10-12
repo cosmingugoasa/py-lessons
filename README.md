@@ -39,3 +39,4 @@ Launch the "py-lesson.py"
 ```sh
 $ python pylesson.py
 ```
+The output file will be at root level of the folder
