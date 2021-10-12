@@ -1,10 +1,12 @@
-# PyLessons v1.1
+# PyLessons v1.2
 
 ## W.I.P.
-Currently working on integration with [destreamer](https://github.com/snobu/destreamer) so you can use this providing the link to the lesson or a file with the links of multiple lessons, instead of having to download the lessons separately.
-
+Currently working on refactoring since we have a nice spaghetti plate here...
+Next up : 
+  - Better UX
+   
 ## Things to know
-Currently working with **.mkv** video files only.
+Currently working with **.wav** audio files only.
 
 ## Prereqs
 - [**Python 3.x**](https://www.python.org/): you will need python installed on your system. (Developed with python 3.9.4).
@@ -23,13 +25,16 @@ $ pip install -r requirements.txt
 
 ## How to use
 
-Open cmd (or any terminal) and go to the project folder
+Open cmd (or any terminal) and go to the project folder and activate the virtual env
 
 ```sh
 $ cd D:\Documents\Dev\py-lessons
 ```
-Launch the "py-lesson.py" and give as first parameter **the path** to the folder with the video lessons
+```sh
+$ env\Scripts\activate
+```
+Launch the "py-lesson.py"
 
 ```sh
-$ .\pylesson.py D:\Documents\Destream\destreamer\videos
+$ python pylesson.py
 ```
