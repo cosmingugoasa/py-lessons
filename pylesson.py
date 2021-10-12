@@ -42,14 +42,17 @@ elif(menuChoice == "2"):
     txtFile = input()
     mkvExtractionTask = subprocess.run(f"destreamer.cmd -u {STUDENT_MAIL} -f {txtFile}", shell=True)
 elif(menuChoice == "3"):
-    print("Cercando 'audio.wav'")
+    print("Inserisci il nome della registrazione SENZA SPAZI : ")
+    #audioFile = input()
+    #mkvExtractionTask = subprocess.run(f"{FFMPEG_FILE_PATH} -i {audioFile} audio.wav", shell=True) 
 else:
     print(Fore.RED + "- Opzione non valida" + Fore.RESET)
     sys.exit()   
 
-if((menuChoice == "1" or menuChoice == "2") and mkvExtractionTask.returncode != 0):
-    print(Fore.RED + "- Failed to download mkv file" + Fore.RESET)
-    sys.exit()
+if(menuChoice != "3"):
+    if (mkvExtractionTask.returncode != 0):
+        print(Fore.RED + "- Failed to retrieve audio file" + Fore.RESET)
+        sys.exit()
 
 os.chdir(main_working_dir)
 #endregion
@@ -109,12 +112,19 @@ if(menuChoice != "3"):
         shutil.rmtree(VIDEO_FOLDER_PATH)
 
         print(Fore.MAGENTA + f"Close window, and go study" + Fore.RESET)
-else:
+elif (menuChoice == "3"):
     #for audio file
     #make folder for each lesson's chunks
     if not (os.path.exists(f"chunks/{files_outputted}")):
         os.mkdir(f"chunks/{files_outputted}")
-     
+    
+    print("Inserisci il nome della registrazione SENZA SPAZI : ")
+    audioFile = input()
+    mkvExtractionTask = subprocess.run(f"{FFMPEG_FILE_PATH} -i {audioFile} audio.wav", shell=True) 
+    if(mkvExtractionTask.returncode != 0):
+        print(Fore.RED + "- Failed to retrieve audio file" + Fore.RESET)
+        sys.exit()
+
     splittingTask = subprocess.run(f"{FFMPEG_FILE_PATH} -loglevel quiet -nostats -i audio.wav -f segment -segment_time 90 -c copy chunks/{files_outputted}/%03d.wav", shell=True)
 
     if(splittingTask.returncode != 0):
