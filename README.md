@@ -19,6 +19,9 @@ You will need to install all the python dependencies of the project, so i recomm
 $ python -m venv my-env
 $ ./my-env/Scripts/activate
 ```
+**PyAudio has some problems installing with pip, so download it from [**here**](https://download.lfd.uci.edu/pythonlibs/x6hvwk7i/PyAudio-0.2.11-cp310-cp310-win_amd64.whl)
+and open the requirements.txt file and replace my file's path with yours**
+
 Install dependencies from the *requirements.txt*. You **MUST** be in the same folder as the .txt
 ```sh
 $ pip install -r requirements.txt
